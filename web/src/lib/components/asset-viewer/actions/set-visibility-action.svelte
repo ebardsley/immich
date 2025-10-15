@@ -2,6 +2,7 @@
   import MenuOption from '$lib/components/shared-components/context-menu/menu-option.svelte';
   import { AssetAction } from '$lib/constants';
   import type { TimelineAsset } from '$lib/managers/timeline-manager/types';
+  import { featureFlags } from '$lib/stores/server-config.store';
   import { handleError } from '$lib/utils/handle-error';
   import { AssetVisibility, updateAssets } from '@immich/sdk';
   import { modalManager } from '@immich/ui';
@@ -54,8 +55,10 @@
   };
 </script>
 
+{#if $featureFlags.lockedFolder }
 <MenuOption
   onClick={() => toggleLockedVisibility()}
   text={isLocked ? $t('move_off_locked_folder') : $t('move_to_locked_folder')}
   icon={isLocked ? mdiLockOpenVariantOutline : mdiLockOutline}
 />
+{/if}

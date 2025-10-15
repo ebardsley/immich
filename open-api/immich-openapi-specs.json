@@ -16084,6 +16084,9 @@
           "library": {
             "$ref": "#/components/schemas/SystemConfigLibraryDto"
           },
+          "lockedFolder": {
+            "$ref": "#/components/schemas/SystemConfigLockedFolderDto"
+          },
           "logging": {
             "$ref": "#/components/schemas/SystemConfigLoggingDto"
           },
@@ -16139,6 +16142,7 @@
           "image",
           "job",
           "library",
+          "lockedFolder",
           "logging",
           "machineLearning",
           "map",
@@ -16465,6 +16469,17 @@
         "type": "object"
       },
       "SystemConfigLibraryWatchDto": {
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "enabled"
+        ],
+        "type": "object"
+      },
+      "SystemConfigLockedFolderDto": {
         "properties": {
           "enabled": {
             "type": "boolean"

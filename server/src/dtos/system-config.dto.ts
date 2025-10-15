@@ -613,6 +613,11 @@ class SystemConfigTrashDto {
   days!: number;
 }
 
+class SystemConfigLockedFolderDto {
+  @ValidateBoolean()
+  enabled!: boolean;
+}
+
 class SystemConfigUserDto {
   @IsInt()
   @Min(1)
@@ -696,6 +701,11 @@ export class SystemConfigDto implements SystemConfig {
   @ValidateNested()
   @IsObject()
   trash!: SystemConfigTrashDto;
+
+  @Type(() => SystemConfigLockedFolderDto)
+  @ValidateNested()
+  @IsObject()
+  lockedFolder!: SystemConfigLockedFolderDto;
 
   @Type(() => SystemConfigThemeDto)
   @ValidateNested()

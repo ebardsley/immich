@@ -1,6 +1,7 @@
 <script lang="ts">
   import { getAssetControlContext } from '$lib/components/timeline/AssetSelectControlBar.svelte';
   import MenuOption from '$lib/components/shared-components/context-menu/menu-option.svelte';
+  import { featureFlags } from '$lib/stores/server-config.store';
   import type { OnSetVisibility } from '$lib/utils/actions';
   import { handleError } from '$lib/utils/handle-error';
   import { AssetVisibility, updateAssets } from '@immich/sdk';
@@ -51,6 +52,7 @@
   };
 </script>
 
+{#if $featureFlags.lockedFolder }
 {#if menuItem}
   <MenuOption
     onClick={setLockedVisibility}
@@ -68,4 +70,5 @@
   >
     {unlock ? $t('move_off_locked_folder') : $t('move_to_locked_folder')}
   </Button>
+{/if}
 {/if}

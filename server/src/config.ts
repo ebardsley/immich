@@ -138,6 +138,9 @@ export interface SystemConfig {
     enabled: boolean;
     days: number;
   };
+  lockedFolder: {
+    enabled: boolean;
+  };
   theme: {
     customCss: string;
   };
@@ -330,6 +333,9 @@ export const defaults = Object.freeze<SystemConfig>({
   trash: {
     enabled: true,
     days: 30,
+  },
+  lockedFolder: {
+    enabled: false,
   },
   theme: {
     customCss: '',

@@ -25,6 +25,7 @@ export const featureFlags = writable<FeatureFlags>({
   passwordLogin: true,
   configFile: false,
   trash: true,
+  lockedFolder: true,
   email: false,
 });
 

@@ -132,12 +132,14 @@
     icon={isArchiveSelected ? mdiArchiveArrowDown : mdiArchiveArrowDownOutline}
   ></SideBarLink>
 
-  <SideBarLink
-    title={$t('locked_folder')}
-    href={resolve('/(user)/locked')}
-    bind:isSelected={isLockedFolderSelected}
-    icon={isLockedFolderSelected ? mdiLock : mdiLockOutline}
-  ></SideBarLink>
+  {#if $featureFlags.lockedFolder }
+    <SideBarLink
+      title={$t('locked_folder')}
+      href={resolve('/(user)/locked')}
+      bind:isSelected={isLockedFolderSelected}
+      icon={isLockedFolderSelected ? mdiLock : mdiLockOutline}
+    ></SideBarLink>
+  {/if}
 
   {#if $featureFlags.trash}
     <SideBarLink
