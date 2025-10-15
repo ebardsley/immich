@@ -33,7 +33,7 @@
   };
 </script>
 
-{#if isOwner}
+{#if true}
   <section class="px-4 mt-10">
     <AutogrowTextarea
       content={description}

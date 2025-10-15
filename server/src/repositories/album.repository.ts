@@ -70,7 +70,7 @@ const withAssets = (eb: ExpressionBuilder<DB, 'album'>) => {
 
 @Injectable()
 export class AlbumRepository {
-  constructor(@InjectKysely() private db: Kysely<DB>) {}
+  constructor(@InjectKysely() private db: Kysely<DB>) { }
 
   @GenerateSql({ params: [DummyValue.UUID, { withAssets: true }] })
   async getById(id: string, options: AlbumInfoOptions) {
@@ -93,17 +93,6 @@ export class AlbumRepository {
       .selectFrom('album')
       .selectAll('album')
       .innerJoin('album_asset', 'album_asset.albumsId', 'album.id')
-      .where((eb) =>
-        eb.or([
-          eb('album.ownerId', '=', ownerId),
-          eb.exists(
-            eb
-              .selectFrom('album_user')
-              .whereRef('album_user.albumsId', '=', 'album.id')
-              .where('album_user.usersId', '=', ownerId),
-          ),
-        ]),
-      )
       .where('album_asset.assetsId', '=', assetId)
       .where('album.deletedAt', 'is', null)
       .orderBy('album.createdAt', 'desc')
@@ -147,7 +136,6 @@ export class AlbumRepository {
       .select(withOwner)
       .select(withAlbumUsers)
       .select(withSharedLink)
-      .where('album.ownerId', '=', ownerId)
       .where('album.deletedAt', 'is', null)
       .orderBy('album.createdAt', 'desc')
       .execute();
@@ -167,13 +155,11 @@ export class AlbumRepository {
             eb
               .selectFrom('album_user')
               .whereRef('album_user.albumsId', '=', 'album.id')
-              .where((eb) => eb.or([eb('album.ownerId', '=', ownerId), eb('album_user.usersId', '=', ownerId)])),
           ),
           eb.exists(
             eb
               .selectFrom('shared_link')
               .whereRef('shared_link.albumId', '=', 'album.id')
-              .where('shared_link.userId', '=', ownerId),
           ),
         ]),
       )
@@ -193,7 +179,6 @@ export class AlbumRepository {
     return this.db
       .selectFrom('album')
       .selectAll('album')
-      .where('album.ownerId', '=', ownerId)
       .where('album.deletedAt', 'is', null)
       .where((eb) => eb.not(eb.exists(eb.selectFrom('album_user').whereRef('album_user.albumsId', '=', 'album.id'))))
       .where((eb) => eb.not(eb.exists(eb.selectFrom('shared_link').whereRef('shared_link.albumId', '=', 'album.id'))))

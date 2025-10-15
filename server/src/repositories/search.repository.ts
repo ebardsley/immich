@@ -168,7 +168,7 @@ export interface GetCameraMakesOptions {
 
 @Injectable()
 export class SearchRepository {
-  constructor(@InjectKysely() private db: Kysely<DB>) {}
+  constructor(@InjectKysely() private db: Kysely<DB>) { }
 
   @GenerateSql({
     params: [
@@ -329,7 +329,6 @@ export class SearchRepository {
             .innerJoin('asset', 'asset.id', 'asset_face.assetId')
             .innerJoin('face_search', 'face_search.faceId', 'asset_face.id')
             .leftJoin('person', 'person.id', 'asset_face.personId')
-            .where('asset.ownerId', '=', anyUuid(userIds))
             .where('asset.deletedAt', 'is', null)
             .$if(!!hasPerson, (qb) => qb.where('asset_face.personId', 'is not', null))
             .$if(!!minBirthDate, (qb) =>
@@ -382,7 +381,6 @@ export class SearchRepository {
           .selectFrom('asset_exif')
           .select(['city', 'assetId'])
           .innerJoin('asset', 'asset.id', 'asset_exif.assetId')
-          .where('asset.ownerId', '=', anyUuid(userIds))
           .where('asset.visibility', '=', AssetVisibility.Timeline)
           .where('asset.type', '=', AssetType.Image)
           .where('asset.deletedAt', 'is', null)
@@ -398,7 +396,6 @@ export class SearchRepository {
                 .selectFrom('asset_exif')
                 .select(['city', 'assetId'])
                 .innerJoin('asset', 'asset.id', 'asset_exif.assetId')
-                .where('asset.ownerId', '=', anyUuid(userIds))
                 .where('asset.visibility', '=', AssetVisibility.Timeline)
                 .where('asset.type', '=', AssetType.Image)
                 .where('asset.deletedAt', 'is', null)
@@ -481,7 +478,6 @@ export class SearchRepository {
       .select(field)
       .distinctOn(field)
       .innerJoin('asset', 'asset.id', 'asset_exif.assetId')
-      .where('ownerId', '=', anyUuid(userIds))
       .where('visibility', '=', AssetVisibility.Timeline)
       .where('deletedAt', 'is', null)
       .where(field, 'is not', null);

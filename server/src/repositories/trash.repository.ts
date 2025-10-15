@@ -5,7 +5,7 @@ import { AssetStatus } from 'src/enum';
 import { DB } from 'src/schema';
 
 export class TrashRepository {
-  constructor(@InjectKysely() private db: Kysely<DB>) {}
+  constructor(@InjectKysely() private db: Kysely<DB>) { }
 
   getDeletedIds(): AsyncIterableIterator<{ id: string }> {
     return this.db.selectFrom('asset').select(['id']).where('status', '=', AssetStatus.Deleted).stream();
@@ -15,7 +15,6 @@ export class TrashRepository {
   async restore(userId: string): Promise<number> {
     const { numUpdatedRows } = await this.db
       .updateTable('asset')
-      .where('ownerId', '=', userId)
       .where('status', '=', AssetStatus.Trashed)
       .set({ status: AssetStatus.Active, deletedAt: null })
       .executeTakeFirst();
@@ -27,7 +26,6 @@ export class TrashRepository {
   async empty(userId: string): Promise<number> {
     const { numUpdatedRows } = await this.db
       .updateTable('asset')
-      .where('ownerId', '=', userId)
       .where('status', '=', AssetStatus.Trashed)
       .set({ status: AssetStatus.Deleted })
       .executeTakeFirst();

@@ -115,7 +115,7 @@ interface GetByIdsRelations {
 
 @Injectable()
 export class AssetRepository {
-  constructor(@InjectKysely() private db: Kysely<DB>) {}
+  constructor(@InjectKysely() private db: Kysely<DB>) { }
 
   async upsertExif(exif: Insertable<AssetExifTable>): Promise<void> {
     const value = { ...exif, assetId: asUuid(exif.assetId) };
@@ -284,7 +284,6 @@ export class AssetRepository {
                 .innerJoin('asset_job_status', 'asset.id', 'asset_job_status.assetId')
                 .where('asset_job_status.previewAt', 'is not', null)
                 .where(sql`(asset."localDateTime" at time zone 'UTC')::date`, '=', sql`today.date`)
-                .where('asset.ownerId', '=', anyUuid(ownerIds))
                 .where('asset.visibility', '=', AssetVisibility.Timeline)
                 .where((eb) =>
                   eb.exists((qb) =>
@@ -342,7 +341,6 @@ export class AssetRepository {
       .select(['deviceAssetId'])
       .where('deviceAssetId', 'in', deviceAssetIds)
       .where('deviceId', '=', deviceId)
-      .where('ownerId', '=', asUuid(ownerId))
       .execute();
 
     return assets.map((asset) => asset.deviceAssetId);
@@ -371,7 +369,6 @@ export class AssetRepository {
     const items = await this.db
       .selectFrom('asset')
       .select(['deviceAssetId'])
-      .where('ownerId', '=', asUuid(ownerId))
       .where('deviceId', '=', deviceId)
       .where('visibility', '!=', AssetVisibility.Hidden)
       .where('deletedAt', 'is', null)
@@ -475,7 +472,6 @@ export class AssetRepository {
     return this.db
       .selectFrom('asset')
       .selectAll('asset')
-      .where('ownerId', '=', asUuid(ownerId))
       .where('checksum', '=', checksum)
       .$call((qb) => (libraryId ? qb.where('libraryId', '=', asUuid(libraryId)) : qb.where('libraryId', 'is', null)))
       .limit(1)
@@ -487,7 +483,6 @@ export class AssetRepository {
     return this.db
       .selectFrom('asset')
       .select(['id', 'checksum', 'deletedAt'])
-      .where('ownerId', '=', asUuid(userId))
       .where('checksum', 'in', checksums)
       .execute();
   }
@@ -497,7 +492,6 @@ export class AssetRepository {
     const asset = await this.db
       .selectFrom('asset')
       .select('id')
-      .where('ownerId', '=', asUuid(ownerId))
       .where('checksum', '=', checksum)
       .where('libraryId', 'is', null)
       .limit(1)
@@ -513,7 +507,6 @@ export class AssetRepository {
       .select(['asset.id', 'asset.ownerId'])
       .innerJoin('asset_exif', 'asset.id', 'asset_exif.assetId')
       .where('id', '!=', asUuid(otherAssetId))
-      .where('ownerId', '=', asUuid(ownerId))
       .where('type', '=', type)
       .where('asset_exif.livePhotoCID', '=', livePhotoCID)
       .limit(1)
@@ -527,7 +520,6 @@ export class AssetRepository {
       .select((eb) => eb.fn.countAll<number>().filterWhere('type', '=', AssetType.Image).as(AssetType.Image))
       .select((eb) => eb.fn.countAll<number>().filterWhere('type', '=', AssetType.Video).as(AssetType.Video))
       .select((eb) => eb.fn.countAll<number>().filterWhere('type', '=', AssetType.Other).as(AssetType.Other))
-      .where('ownerId', '=', asUuid(ownerId))
       .$if(visibility === undefined, withDefaultVisibility)
       .$if(!!visibility, (qb) => qb.where('asset.visibility', '=', visibility!))
       .$if(isFavorite !== undefined, (qb) => qb.where('isFavorite', '=', isFavorite!))
@@ -542,7 +534,6 @@ export class AssetRepository {
       .selectAll('asset')
       .$call(withExif)
       .$call(withDefaultVisibility)
-      .where('ownerId', '=', anyUuid(userIds))
       .where('deletedAt', 'is', null)
       .orderBy((eb) => eb.fn('random'))
       .limit(take)
@@ -573,7 +564,6 @@ export class AssetRepository {
               )
               .where((eb) => eb.or([eb('asset.stackId', 'is', null), eb(eb.table('stack'), 'is not', null)])),
           )
-          .$if(!!options.userIds, (qb) => qb.where('asset.ownerId', '=', anyUuid(options.userIds!)))
           .$if(options.isFavorite !== undefined, (qb) => qb.where('asset.isFavorite', '=', options.isFavorite!))
           .$if(!!options.assetType, (qb) => qb.where('asset.type', '=', options.assetType!))
           .$if(options.isDuplicate !== undefined, (qb) =>
@@ -646,7 +636,6 @@ export class AssetRepository {
             ),
           )
           .$if(!!options.personId, (qb) => hasPeople(qb, [options.personId!]))
-          .$if(!!options.userIds, (qb) => qb.where('asset.ownerId', '=', anyUuid(options.userIds!)))
           .$if(options.isFavorite !== undefined, (qb) => qb.where('asset.isFavorite', '=', options.isFavorite!))
           .$if(!!options.withStacked, (qb) =>
             qb
@@ -737,7 +726,6 @@ export class AssetRepository {
       .distinctOn('asset_exif.city')
       .select(['assetId as data', 'asset_exif.city as value'])
       .$narrowType<{ value: NotNull }>()
-      .where('ownerId', '=', asUuid(ownerId))
       .where('visibility', '=', AssetVisibility.Timeline)
       .where('type', '=', AssetType.Image)
       .where('deletedAt', 'is', null)
@@ -776,7 +764,6 @@ export class AssetRepository {
         (join) => join.on('stack.id', 'is not', null),
       )
       .select((eb) => eb.fn.toJson(eb.table('stacked_assets')).$castTo<Stack | null>().as('stack'))
-      .where('asset.ownerId', '=', asUuid(ownerId))
       .where('asset.visibility', '!=', AssetVisibility.Hidden)
       .where('asset.updatedAt', '<=', updatedUntil)
       .$if(!!lastId, (qb) => qb.where('asset.id', '>', lastId!))
@@ -804,7 +791,6 @@ export class AssetRepository {
         (join) => join.on('stack.id', 'is not', null),
       )
       .select((eb) => eb.fn.toJson(eb.table('stacked_assets').$castTo<Stack | null>()).as('stack'))
-      .where('asset.ownerId', '=', anyUuid(options.userIds))
       .where('asset.visibility', '!=', AssetVisibility.Hidden)
       .where('asset.updatedAt', '>', options.updatedAfter)
       .limit(options.limit)

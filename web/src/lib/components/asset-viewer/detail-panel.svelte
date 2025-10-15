@@ -155,7 +155,7 @@
   <DetailPanelDescription {asset} {isOwner} />
   <DetailPanelRating {asset} {isOwner} />
 
-  {#if !authManager.isSharedLink && isOwner}
+  {#if !authManager.isSharedLink}
     <section class="px-4 pt-4 text-sm">
       <div class="flex h-10 w-full items-center justify-between">
         <h2 class="uppercase">{$t('people')}</h2>
@@ -272,8 +272,8 @@
         type="button"
         class="flex w-full text-start justify-between place-items-start gap-4 py-4"
         onclick={handleChangeDate}
-        title={isOwner ? $t('edit_date') : ''}
-        class:hover:text-primary={isOwner}
+        title={true ? $t('edit_date') : ''}
+        class:hover:text-primary={true}
       >
         <div class="flex gap-4">
           <div>
@@ -308,13 +308,13 @@
           </div>
         </div>
 
-        {#if isOwner}
+        {#if true}
           <div class="p-1">
             <Icon icon={mdiPencil} size="20" />
           </div>
         {/if}
       </button>
-    {:else if !dateTime && isOwner}
+    {:else if !dateTime}
       <div class="flex justify-between place-items-start gap-4 py-4">
         <div class="flex gap-4">
           <div>
@@ -333,7 +333,7 @@
       <div>
         <p class="break-all flex place-items-center gap-2 whitespace-pre-wrap">
           {asset.originalFileName}
-          {#if isOwner}
+          {#if true}
             <IconButton
               icon={mdiInformationOutline}
               aria-label={$t('show_file_location')}
@@ -485,7 +485,7 @@
   </div>
 {/if}
 
-{#if currentAlbum && currentAlbum.albumUsers.length > 0 && asset.owner}
+{#if !isOwner || (currentAlbum && currentAlbum.albumUsers.length > 0 && asset.owner)}
   <section class="px-6 dark:text-immich-dark-fg mt-4">
     <p class="uppercase text-sm">{$t('shared_by')}</p>
     <div class="flex gap-4 pt-4">

@@ -114,26 +114,14 @@ export class MapRepository {
       .$if(fileCreatedAfter !== undefined, (q) => q.where('fileCreatedAt', '>=', fileCreatedAfter!))
       .$if(fileCreatedBefore !== undefined, (q) => q.where('fileCreatedAt', '<=', fileCreatedBefore!))
       .where('deletedAt', 'is', null)
-      .where((eb) => {
-        const expression: Expression<SqlBool>[] = [];
-
-        if (ownerIds.length > 0) {
-          expression.push(eb('ownerId', 'in', ownerIds));
-        }
-
-        if (albumIds.length > 0) {
-          expression.push(
-            eb.exists((eb) =>
-              eb
-                .selectFrom('album_asset')
-                .whereRef('asset.id', '=', 'album_asset.assetsId')
-                .where('album_asset.albumsId', 'in', albumIds),
-            ),
-          );
-        }
-
-        return eb.or(expression);
-      })
+      .$if(albumIds.length > 0, (q) => q.where((eb) => {
+        return eb.exists((eb) =>
+          eb
+            .selectFrom('album_asset')
+            .whereRef('asset.id', '=', 'album_asset.assetsId')
+            .where('album_asset.albumsId', 'in', albumIds),
+        );
+      }))
       .orderBy('fileCreatedAt', 'desc')
       .execute();
   }

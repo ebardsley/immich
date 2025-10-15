@@ -14,7 +14,7 @@ const builder = (db: Kysely<DB>) =>
 
 @Injectable()
 export class DownloadRepository {
-  constructor(@InjectKysely() private db: Kysely<DB>) {}
+  constructor(@InjectKysely() private db: Kysely<DB>) { }
 
   downloadAssetIds(ids: string[]) {
     return builder(this.db).where('asset.id', '=', anyUuid(ids)).stream();
@@ -33,7 +33,6 @@ export class DownloadRepository {
 
   downloadUserId(userId: string) {
     return builder(this.db)
-      .where('asset.ownerId', '=', userId)
       .where('asset.visibility', '!=', AssetVisibility.Hidden)
       .stream();
   }

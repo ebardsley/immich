@@ -24,7 +24,7 @@ interface DuplicateMergeOptions {
 
 @Injectable()
 export class DuplicateRepository {
-  constructor(@InjectKysely() private db: Kysely<DB>) {}
+  constructor(@InjectKysely() private db: Kysely<DB>) { }
 
   @GenerateSql({ params: [DummyValue.UUID] })
   getAll(userId: string) {
@@ -48,7 +48,6 @@ export class DuplicateRepository {
             .select((eb) =>
               eb.fn.jsonAgg('asset2').orderBy('asset.localDateTime', 'asc').$castTo<MapAsset[]>().as('assets'),
             )
-            .where('asset.ownerId', '=', asUuid(userId))
             .where('asset.duplicateId', 'is not', null)
             .$narrowType<{ duplicateId: NotNull }>()
             .where('asset.deletedAt', 'is', null)
@@ -83,7 +82,6 @@ export class DuplicateRepository {
     await this.db
       .updateTable('asset')
       .set({ duplicateId: null })
-      .where('ownerId', '=', userId)
       .where('duplicateId', '=', id)
       .execute();
   }
@@ -98,7 +96,6 @@ export class DuplicateRepository {
     await this.db
       .updateTable('asset')
       .set({ duplicateId: null })
-      .where('ownerId', '=', userId)
       .where('duplicateId', 'in', ids)
       .execute();
   }
@@ -128,7 +125,6 @@ export class DuplicateRepository {
               sql<number>`smart_search.embedding <=> ${embedding}`.as('distance'),
             ])
             .innerJoin('smart_search', 'asset.id', 'smart_search.assetId')
-            .where('asset.ownerId', '=', anyUuid(userIds))
             .where('asset.deletedAt', 'is', null)
             .where('asset.type', '=', type)
             .where('asset.id', '!=', asUuid(assetId))

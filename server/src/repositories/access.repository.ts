@@ -4,10 +4,10 @@ import { InjectKysely } from 'nestjs-kysely';
 import { ChunkedSet, DummyValue, GenerateSql } from 'src/decorators';
 import { AlbumUserRole, AssetVisibility } from 'src/enum';
 import { DB } from 'src/schema';
-import { asUuid } from 'src/utils/database';
+
 
 class ActivityAccess {
-  constructor(private db: Kysely<DB>) {}
+  constructor(private db: Kysely<DB>) { }
 
   @GenerateSql({ params: [DummyValue.UUID, DummyValue.UUID_SET] })
   @ChunkedSet({ paramIndex: 1 })
@@ -37,7 +37,6 @@ class ActivityAccess {
       .select('activity.id')
       .leftJoin('album', (join) => join.onRef('activity.albumId', '=', 'album.id').on('album.deletedAt', 'is', null))
       .where('activity.id', 'in', [...activityIds])
-      .whereRef('album.ownerId', '=', asUuid(userId))
       .execute()
       .then((activities) => new Set(activities.map((activity) => activity.id)));
   }
@@ -56,7 +55,6 @@ class ActivityAccess {
       .leftJoin('user', (join) => join.onRef('user.id', '=', 'albumUsers.usersId').on('user.deletedAt', 'is', null))
       .where('album.id', 'in', [...albumIds])
       .where('album.isActivityEnabled', '=', true)
-      .where((eb) => eb.or([eb('album.ownerId', '=', userId), eb('user.id', '=', userId)]))
       .where('album.deletedAt', 'is', null)
       .execute()
       .then((albums) => new Set(albums.map((album) => album.id)));
@@ -64,7 +62,7 @@ class ActivityAccess {
 }
 
 class AlbumAccess {
-  constructor(private db: Kysely<DB>) {}
+  constructor(private db: Kysely<DB>) { }
 
   @GenerateSql({ params: [DummyValue.UUID, DummyValue.UUID_SET] })
   @ChunkedSet({ paramIndex: 1 })
@@ -77,7 +75,6 @@ class AlbumAccess {
       .selectFrom('album')
       .select('album.id')
       .where('album.id', 'in', [...albumIds])
-      .where('album.ownerId', '=', userId)
       .where('album.deletedAt', 'is', null)
       .execute()
       .then((albums) => new Set(albums.map((album) => album.id)));
@@ -126,7 +123,7 @@ class AlbumAccess {
 }
 
 class AssetAccess {
-  constructor(private db: Kysely<DB>) {}
+  constructor(private db: Kysely<DB>) { }
 
   @GenerateSql({ params: [DummyValue.UUID, DummyValue.UUID_SET] })
   @ChunkedSet({ paramIndex: 1 })
@@ -152,7 +149,6 @@ class AssetAccess {
           eb('asset.livePhotoVideoId', '=', sql<string>`any(target.ids)`),
         ]),
       )
-      .where((eb) => eb.or([eb('album.ownerId', '=', userId), eb('user.id', '=', userId)]))
       .where('album.deletedAt', 'is', null)
       .execute()
       .then((assets) => {
@@ -180,7 +176,6 @@ class AssetAccess {
       .selectFrom('asset')
       .select('asset.id')
       .where('asset.id', 'in', [...assetIds])
-      .where('asset.ownerId', '=', userId)
       .$if(!hasElevatedPermission, (eb) => eb.where('asset.visibility', '!=', AssetVisibility.Locked))
       .execute()
       .then((assets) => new Set(assets.map((asset) => asset.id)));
@@ -266,7 +261,7 @@ class AssetAccess {
 }
 
 class AuthDeviceAccess {
-  constructor(private db: Kysely<DB>) {}
+  constructor(private db: Kysely<DB>) { }
 
   @GenerateSql({ params: [DummyValue.UUID, DummyValue.UUID_SET] })
   @ChunkedSet({ paramIndex: 1 })
@@ -286,7 +281,7 @@ class AuthDeviceAccess {
 }
 
 class NotificationAccess {
-  constructor(private db: Kysely<DB>) {}
+  constructor(private db: Kysely<DB>) { }
 
   @GenerateSql({ params: [DummyValue.UUID, DummyValue.UUID_SET] })
   @ChunkedSet({ paramIndex: 1 })
@@ -306,7 +301,7 @@ class NotificationAccess {
 }
 
 class SessionAccess {
-  constructor(private db: Kysely<DB>) {}
+  constructor(private db: Kysely<DB>) { }
 
   @GenerateSql({ params: [DummyValue.UUID, DummyValue.UUID_SET] })
   @ChunkedSet({ paramIndex: 1 })
@@ -325,7 +320,7 @@ class SessionAccess {
   }
 }
 class StackAccess {
-  constructor(private db: Kysely<DB>) {}
+  constructor(private db: Kysely<DB>) { }
 
   @GenerateSql({ params: [DummyValue.UUID, DummyValue.UUID_SET] })
   @ChunkedSet({ paramIndex: 1 })
@@ -338,14 +333,13 @@ class StackAccess {
       .selectFrom('stack')
       .select('stack.id')
       .where('stack.id', 'in', [...stackIds])
-      .where('stack.ownerId', '=', userId)
       .execute()
       .then((stacks) => new Set(stacks.map((stack) => stack.id)));
   }
 }
 
 class TimelineAccess {
-  constructor(private db: Kysely<DB>) {}
+  constructor(private db: Kysely<DB>) { }
 
   @GenerateSql({ params: [DummyValue.UUID, DummyValue.UUID_SET] })
   @ChunkedSet({ paramIndex: 1 })
@@ -365,7 +359,7 @@ class TimelineAccess {
 }
 
 class MemoryAccess {
-  constructor(private db: Kysely<DB>) {}
+  constructor(private db: Kysely<DB>) { }
 
   @GenerateSql({ params: [DummyValue.UUID, DummyValue.UUID_SET] })
   @ChunkedSet({ paramIndex: 1 })
@@ -378,7 +372,6 @@ class MemoryAccess {
       .selectFrom('memory')
       .select('memory.id')
       .where('memory.id', 'in', [...memoryIds])
-      .where('memory.ownerId', '=', userId)
       .where('memory.deletedAt', 'is', null)
       .execute()
       .then((memories) => new Set(memories.map((memory) => memory.id)));
@@ -386,7 +379,7 @@ class MemoryAccess {
 }
 
 class PersonAccess {
-  constructor(private db: Kysely<DB>) {}
+  constructor(private db: Kysely<DB>) { }
 
   @GenerateSql({ params: [DummyValue.UUID, DummyValue.UUID_SET] })
   @ChunkedSet({ paramIndex: 1 })
@@ -399,7 +392,6 @@ class PersonAccess {
       .selectFrom('person')
       .select('person.id')
       .where('person.id', 'in', [...personIds])
-      .where('person.ownerId', '=', userId)
       .execute()
       .then((persons) => new Set(persons.map((person) => person.id)));
   }
@@ -416,14 +408,13 @@ class PersonAccess {
       .select('asset_face.id')
       .leftJoin('asset', (join) => join.onRef('asset.id', '=', 'asset_face.assetId').on('asset.deletedAt', 'is', null))
       .where('asset_face.id', 'in', [...assetFaceIds])
-      .where('asset.ownerId', '=', userId)
       .execute()
       .then((faces) => new Set(faces.map((face) => face.id)));
   }
 }
 
 class PartnerAccess {
-  constructor(private db: Kysely<DB>) {}
+  constructor(private db: Kysely<DB>) { }
 
   @GenerateSql({ params: [DummyValue.UUID, DummyValue.UUID_SET] })
   @ChunkedSet({ paramIndex: 1 })
@@ -443,7 +434,7 @@ class PartnerAccess {
 }
 
 class TagAccess {
-  constructor(private db: Kysely<DB>) {}
+  constructor(private db: Kysely<DB>) { }
 
   @GenerateSql({ params: [DummyValue.UUID, DummyValue.UUID_SET] })
   @ChunkedSet({ paramIndex: 1 })

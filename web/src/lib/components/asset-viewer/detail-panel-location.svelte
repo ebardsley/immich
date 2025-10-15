@@ -13,6 +13,7 @@
   }
 
   let { isOwner, asset = $bindable() }: Props = $props();
+  isOwner = true;
 
   let isShowChangeLocation = $state(false);
 

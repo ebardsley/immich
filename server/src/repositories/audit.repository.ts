@@ -13,7 +13,7 @@ export interface AuditSearch {
 
 @Injectable()
 export class AuditRepository {
-  constructor(@InjectKysely() private db: Kysely<DB>) {}
+  constructor(@InjectKysely() private db: Kysely<DB>) { }
 
   @GenerateSql({
     params: [
@@ -27,7 +27,6 @@ export class AuditRepository {
       .where('audit.createdAt', '>', since)
       .$if(!!options.action, (qb) => qb.where('audit.action', '=', options.action!))
       .$if(!!options.entityType, (qb) => qb.where('audit.entityType', '=', options.entityType!))
-      .where('audit.ownerId', 'in', options.userIds)
       .distinctOn(['audit.entityId', 'audit.entityType'])
       .orderBy('audit.entityId', 'desc')
       .orderBy('audit.entityType', 'desc')

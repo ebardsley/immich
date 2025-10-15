@@ -76,7 +76,7 @@ const withFaceSearch = (eb: ExpressionBuilder<DB, 'asset_face'>) => {
 
 @Injectable()
 export class PersonRepository {
-  constructor(@InjectKysely() private db: Kysely<DB>) {}
+  constructor(@InjectKysely() private db: Kysely<DB>) { }
 
   @GenerateSql({ params: [{ oldPersonId: DummyValue.UUID, newPersonId: DummyValue.UUID }] })
   async reassignFaces({ oldPersonId, faceIds, newPersonId }: UpdateFacesData): Promise<number> {
@@ -128,7 +128,6 @@ export class PersonRepository {
     return this.db
       .selectFrom('person')
       .selectAll('person')
-      .$if(!!options.ownerId, (qb) => qb.where('person.ownerId', '=', options.ownerId!))
       .$if(options.thumbnailPath !== undefined, (qb) => qb.where('person.thumbnailPath', '=', options.thumbnailPath!))
       .$if(options.faceAssetId === null, (qb) => qb.where('person.faceAssetId', 'is', null))
       .$if(!!options.faceAssetId, (qb) => qb.where('person.faceAssetId', '=', options.faceAssetId!))
@@ -158,7 +157,6 @@ export class PersonRepository {
           .on('asset.visibility', '=', sql.lit(AssetVisibility.Timeline))
           .on('asset.deletedAt', 'is', null),
       )
-      .where('person.ownerId', '=', userId)
       .where('asset_face.deletedAt', 'is', null)
       .orderBy('person.isHidden', 'asc')
       .orderBy('person.isFavorite', 'desc')
@@ -313,12 +311,9 @@ export class PersonRepository {
       .selectFrom('person')
       .selectAll('person')
       .where((eb) =>
-        eb.and([
-          eb('person.ownerId', '=', userId),
-          eb.or([
-            eb(eb.fn('lower', ['person.name']), 'like', `${personName.toLowerCase()}%`),
-            eb(eb.fn('lower', ['person.name']), 'like', `% ${personName.toLowerCase()}%`),
-          ]),
+        eb.or([
+          eb(eb.fn('lower', ['person.name']), 'like', `${personName.toLowerCase()}%`),
+          eb(eb.fn('lower', ['person.name']), 'like', `% ${personName.toLowerCase()}%`),
         ]),
       )
       .limit(1000)
@@ -332,7 +327,7 @@ export class PersonRepository {
       .selectFrom('person')
       .select(['person.id', 'person.name'])
       .distinctOn((eb) => eb.fn('lower', ['person.name']))
-      .where((eb) => eb.and([eb('person.ownerId', '=', userId), eb('person.name', '!=', '')]))
+      .where((eb) => eb.and([eb('person.name', '!=', '')]))
       .$if(!withHidden, (qb) => qb.where('person.isHidden', '=', false))
       .execute();
   }
@@ -379,7 +374,6 @@ export class PersonRepository {
             ),
         ),
       )
-      .where('person.ownerId', '=', userId)
       .select((eb) => eb.fn.coalesce(eb.fn.countAll<number>(), zero).as('total'))
       .select((eb) => eb.fn.coalesce(eb.fn.countAll<number>().filterWhere('isHidden', '=', true), zero).as('hidden'))
       .executeTakeFirstOrThrow();

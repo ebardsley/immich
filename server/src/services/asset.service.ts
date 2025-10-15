@@ -72,9 +72,9 @@ export class AssetService extends BaseService {
       delete data.owner;
     }
 
-    if (data.ownerId !== auth.user.id || auth.sharedLink) {
-      data.people = [];
-    }
+    // if (data.ownerId !== auth.user.id || auth.sharedLink) {
+    //   data.people = [];
+    // }
 
     return data;
   }
@@ -145,18 +145,18 @@ export class AssetService extends BaseService {
 
     const dateTimesWithTimezone = assets
       ? assets.map((asset) => {
-          const isoString = asset.dateTimeOriginal?.toISOString();
-          let dateTime = isoString ? DateTime.fromISO(isoString) : null;
+        const isoString = asset.dateTimeOriginal?.toISOString();
+        let dateTime = isoString ? DateTime.fromISO(isoString) : null;
 
-          if (dateTime && asset.timeZone) {
-            dateTime = dateTime.setZone(asset.timeZone);
-          }
+        if (dateTime && asset.timeZone) {
+          dateTime = dateTime.setZone(asset.timeZone);
+        }
 
-          return {
-            assetId: asset.assetId,
-            dateTimeOriginal: dateTime?.toISO() ?? null,
-          };
-        })
+        return {
+          assetId: asset.assetId,
+          dateTimeOriginal: dateTime?.toISO() ?? null,
+        };
+      })
       : ids.map((id) => ({ assetId: id, dateTimeOriginal }));
 
     if (dateTimesWithTimezone.length > 0) {

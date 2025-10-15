@@ -6,7 +6,7 @@ import { DB } from 'src/schema';
 import { asUuid, withExif } from 'src/utils/database';
 
 export class ViewRepository {
-  constructor(@InjectKysely() private db: Kysely<DB>) {}
+  constructor(@InjectKysely() private db: Kysely<DB>) { }
 
   @GenerateSql({ params: [DummyValue.UUID] })
   async getUniqueOriginalPaths(userId: string) {
@@ -14,7 +14,6 @@ export class ViewRepository {
       .selectFrom('asset')
       .select((eb) => eb.fn<string>('substring', ['asset.originalPath', eb.val('^(.*/)[^/]*$')]).as('directoryPath'))
       .distinct()
-      .where('ownerId', '=', asUuid(userId))
       .where('visibility', '=', AssetVisibility.Timeline)
       .where('deletedAt', 'is', null)
       .where('fileCreatedAt', 'is not', null)
@@ -34,7 +33,6 @@ export class ViewRepository {
       .selectFrom('asset')
       .selectAll('asset')
       .$call(withExif)
-      .where('ownerId', '=', asUuid(userId))
       .where('visibility', '=', AssetVisibility.Timeline)
       .where('deletedAt', 'is', null)
       .where('fileCreatedAt', 'is not', null)

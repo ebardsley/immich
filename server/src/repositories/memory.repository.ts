@@ -12,7 +12,7 @@ import { IBulkAsset } from 'src/types';
 
 @Injectable()
 export class MemoryRepository implements IBulkAsset {
-  constructor(@InjectKysely() private db: Kysely<DB>) {}
+  constructor(@InjectKysely() private db: Kysely<DB>) { }
 
   async cleanup() {
     await this.db
@@ -40,7 +40,6 @@ export class MemoryRepository implements IBulkAsset {
           .where((where) => where.or([where('hideAt', 'is', null), where('hideAt', '>=', dto.for!)])),
       )
       .where('deletedAt', dto.isTrashed ? 'is not' : 'is', null)
-      .where('ownerId', '=', ownerId);
   }
 
   @GenerateSql(

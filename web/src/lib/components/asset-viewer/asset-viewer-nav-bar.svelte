@@ -164,7 +164,7 @@
       />
     {/if}
 
-    {#if !isOwner && showDownloadButton}
+    {#if showDownloadButton}
       <DownloadAction asset={toTimelineAsset(asset)} />
     {/if}
 
@@ -172,13 +172,13 @@
       <ShowDetailAction {onShowDetail} />
     {/if}
 
-    {#if isOwner}
-      <FavoriteAction {asset} {onAction} />
-    {/if}
+    <FavoriteAction {asset} {onAction} />
 
     {#if isOwner}
       <DeleteAction {asset} {onAction} {preAction} />
+    {/if}
 
+    {#if true}
       <ButtonContextMenu direction="left" align="top-right" color="secondary" title={$t('more')} icon={mdiDotsVertical}>
         {#if showSlideshow && !isLocked}
           <MenuOption icon={mdiPresentationPlay} text={$t('slideshow')} onClick={onPlaySlideshow} />
