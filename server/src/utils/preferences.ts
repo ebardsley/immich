@@ -15,22 +15,22 @@ const getDefaultPreferences = (): UserPreferences => {
       sidebarWeb: false,
     },
     memories: {
-      enabled: true,
+      enabled: false,
     },
     people: {
       enabled: true,
-      sidebarWeb: false,
+      sidebarWeb: true,
     },
     sharedLinks: {
-      enabled: true,
+      enabled: false,
       sidebarWeb: false,
     },
     ratings: {
-      enabled: false,
+      enabled: true,
     },
     tags: {
-      enabled: false,
-      sidebarWeb: false,
+      enabled: true,
+      sidebarWeb: true,
     },
     emailNotifications: {
       enabled: true,
