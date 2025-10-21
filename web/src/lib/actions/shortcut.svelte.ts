@@ -5,6 +5,7 @@ import {
   type KeyDownListenerFactory,
   type KeyInput,
   normalizeKeyInput,
+  type ShortcutCallback,
 } from '$lib/actions/input';
 import ShortcutsModal from '$lib/modals/ShortcutsModal.svelte';
 import { modalManager } from '@immich/ui';
@@ -223,7 +224,7 @@ export const registerShortcutVariant = (first: ShortcutVariant, other: ShortcutV
   };
 };
 
-export const shortcut = (input: KeyInput, help: ShortcutHelp | string, callback: (event: KeyboardEvent) => unknown) => {
+export const shortcut = (input: KeyInput, help: ShortcutHelp | string, callback: ShortcutCallback) => {
   const normalized = normalizeKeyInput(input);
   return attachmentFactory(normalizeHelp(help, normalized), () =>
     keyDownListenerFactory(isActiveFactory, {}, normalized, callback),
@@ -250,13 +251,14 @@ export const newShortcutScope = () => {
   return () => popScope();
 };
 
-export const showShortcutsModal = async () => {
+export const showShortcutsModal = () => {
   if (showingShortcuts) {
     return;
   }
   showingShortcuts = true;
-  await modalManager.show(ShortcutsModal, { shortcutVariants, shortcuts: activeScopeShortcuts });
-  showingShortcuts = false;
+  modalManager
+    .show(ShortcutsModal, { shortcutVariants, shortcuts: activeScopeShortcuts })
+    .finally(() => (showingShortcuts = false));
 };
 
 export const resetModal = () => {

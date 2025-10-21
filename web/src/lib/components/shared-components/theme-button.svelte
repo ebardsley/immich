@@ -17,7 +17,7 @@
   };
 </script>
 
-<svelte:window {@attach shortcut(ctrlKey('t'), $t('dark_theme'), handleToggleTheme)} />
+<svelte:window {@attach shortcut(ctrlKey('d'), $t('dark_theme'), handleToggleTheme)} />
 
 {#if !themeManager.theme.system}
   {#await langs
