@@ -2294,6 +2294,53 @@
         "description": "This endpoint requires the `asset.update` permission."
       }
     },
+    "/assets/{id}/copy": {
+      "put": {
+        "operationId": "copyAsset",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssetCopyDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "cookie": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "tags": [
+          "Assets"
+        ],
+        "x-immich-permission": "asset.copy",
+        "description": "This endpoint requires the `asset.copy` permission."
+      }
+    },
     "/assets/{id}/metadata": {
       "get": {
         "operationId": "getAssetMetadata",
@@ -10584,6 +10631,27 @@
         ],
         "type": "object"
       },
+      "AssetCopyDto": {
+        "properties": {
+          "albums": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "type": "boolean"
+          },
+          "sharedLinks": {
+            "type": "boolean"
+          },
+          "to": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "to"
+        ],
+        "type": "object"
+      },
       "AssetDeltaSyncDto": {
         "properties": {
           "updatedAfter": {
@@ -13207,6 +13275,7 @@
           "asset.download",
           "asset.upload",
           "asset.replace",
+          "asset.copy",
           "album.create",
           "album.read",
           "album.update",

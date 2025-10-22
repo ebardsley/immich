@@ -186,6 +186,20 @@ export class AssetMetadataResponseDto {
   updatedAt!: Date;
 }
 
+export class AssetCopyDto {
+  @ValidateUUID()
+  to!: string;
+
+  @ValidateBoolean({ optional: true })
+  sharedLinks?: boolean;
+
+  @ValidateBoolean({ optional: true })
+  albums?: boolean;
+
+  @ValidateBoolean({ optional: true })
+  metadata?: boolean;
+}
+
 export const mapStats = (stats: AssetStats): AssetStatsResponseDto => {
   return {
     images: stats[AssetType.Image],

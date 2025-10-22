@@ -538,6 +538,12 @@ export type UpdateAssetDto = {
     rating?: number;
     visibility?: AssetVisibility;
 };
+export type AssetCopyDto = {
+    albums?: boolean;
+    metadata?: boolean;
+    sharedLinks?: boolean;
+    to: string;
+};
 export type AssetMetadataResponseDto = {
     key: AssetMetadataKey;
     updatedAt: string;
@@ -2317,6 +2323,19 @@ export function updateAsset({ id, updateAssetDto }: {
         ...opts,
         method: "PUT",
         body: updateAssetDto
+    })));
+}
+/**
+ * This endpoint requires the `asset.copy` permission.
+ */
+export function copyAsset({ id, assetCopyDto }: {
+    id: string;
+    assetCopyDto: AssetCopyDto;
+}, opts?: Oazapfts.RequestOpts) {
+    return oazapfts.ok(oazapfts.fetchText(`/assets/${encodeURIComponent(id)}/copy`, oazapfts.json({
+        ...opts,
+        method: "PUT",
+        body: assetCopyDto
     })));
 }
 /**
@@ -4737,6 +4756,7 @@ export enum Permission {
     AssetDownload = "asset.download",
     AssetUpload = "asset.upload",
     AssetReplace = "asset.replace",
+    AssetCopy = "asset.copy",
     AlbumCreate = "album.create",
     AlbumRead = "album.read",
     AlbumUpdate = "album.update",

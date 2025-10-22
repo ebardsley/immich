@@ -7,6 +7,7 @@ import { AssetResponseDto, MapAsset, SanitizedAssetResponseDto, mapAsset } from 
 import {
   AssetBulkDeleteDto,
   AssetBulkUpdateDto,
+  AssetCopyDto,
   AssetJobName,
   AssetJobsDto,
   AssetMetadataResponseDto,
@@ -179,6 +180,39 @@ export class AssetService extends BaseService {
       if (visibility === AssetVisibility.Locked) {
         await this.albumRepository.removeAssetsFromAll(ids);
       }
+    }
+  }
+
+  async copy(auth: AuthDto, from: string, { to, albums = true, metadata = true, sharedLinks = true }: AssetCopyDto) {
+    await this.requireAccess({ auth, permission: Permission.AssetCopy, ids: [from, to] });
+
+    if (albums) {
+      await this.albumRepository.copyAlbums({ assetFrom: from, assetTo: to });
+    }
+
+    if (sharedLinks) {
+      await this.sharedLinkAssetRepository.copySharedLinks({ assetFrom: from, assetTo: to });
+    }
+
+    if (metadata) {
+      const fromAsset = await this.assetRepository.getById(from);
+      const toAsset = await this.assetRepository.getById(to);
+
+      if (!fromAsset || !toAsset) {
+        throw new BadRequestException('Both assets must exist');
+      }
+
+      if (!fromAsset.sidecarPath) {
+        return;
+      }
+
+      if (toAsset.sidecarPath) {
+        await this.storageRepository.unlink(toAsset.sidecarPath);
+      }
+
+      await this.storageRepository.copyFile(fromAsset.sidecarPath, `${toAsset.originalPath}.xmp`);
+      await this.assetRepository.update({ id: to, sidecarPath: `${toAsset.originalPath}.xmp` });
+      await this.jobRepository.queue({ name: JobName.AssetExtractMetadata, data: { id: to } });
     }
   }
 
