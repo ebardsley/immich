@@ -447,7 +447,6 @@ class TagAccess {
       .selectFrom('tag')
       .select('tag.id')
       .where('tag.id', 'in', [...tagIds])
-      .where('tag.userId', '=', userId)
       .execute()
       .then((tags) => new Set(tags.map((tag) => tag.id)));
   }
