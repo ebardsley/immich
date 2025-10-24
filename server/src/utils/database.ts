@@ -363,7 +363,8 @@ export function searchAssetBuilder(kysely: Kysely<DB>, options: AssetSearchBuild
     .$if(!!options.deviceId, (qb) => qb.where('asset.deviceId', '=', options.deviceId!))
     .$if(!!options.id, (qb) => qb.where('asset.id', '=', asUuid(options.id!)))
     .$if(!!options.libraryId, (qb) => qb.where('asset.libraryId', '=', asUuid(options.libraryId!)))
-    .$if(!!options.userIds, (qb) => qb.where('asset.ownerId', '=', anyUuid(options.userIds!)))
+    // XXX bring this back for uploader id
+    //.$if(!!options.userIds, (qb) => qb.where('asset.ownerId', '=', anyUuid(options.userIds!)))
     .$if(!!options.encodedVideoPath, (qb) => qb.where('asset.encodedVideoPath', '=', options.encodedVideoPath!))
     .$if(!!options.originalPath, (qb) =>
       qb.where(sql`f_unaccent(asset."originalPath")`, 'ilike', sql`'%' || f_unaccent(${options.originalPath}) || '%'`),
