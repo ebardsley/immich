@@ -116,6 +116,11 @@ class BaseSearchWithResultsDto extends BaseSearchDto {
   @Type(() => Number)
   @Optional()
   size?: number;
+
+  @IsString()
+  @IsNotEmpty()
+  @Optional()
+  orderBy?: string;
 }
 
 export class RandomSearchDto extends BaseSearchWithResultsDto {

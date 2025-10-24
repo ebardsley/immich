@@ -11,6 +11,7 @@ import { AssetExifTable } from 'src/schema/tables/asset-exif.table';
 import { anyUuid, searchAssetBuilder, withExif } from 'src/utils/database';
 import { paginationHelper } from 'src/utils/pagination';
 import { isValidInteger } from 'src/validation';
+import { LoggingRepository } from 'src/repositories/logging.repository';
 
 export interface SearchAssetIdOptions {
   checksum?: Buffer;
@@ -98,6 +99,7 @@ export interface SearchAlbumOptions {
 
 export interface SearchOrderOptions {
   orderDirection?: 'asc' | 'desc';
+  orderBy?: string | null;
 }
 
 export interface SearchPaginationOptions {
@@ -168,7 +170,12 @@ export interface GetCameraMakesOptions {
 
 @Injectable()
 export class SearchRepository {
-  constructor(@InjectKysely() private db: Kysely<DB>) { }
+  constructor(
+    @InjectKysely() private db: Kysely<DB>,
+    private logger: LoggingRepository,
+  ) {
+    this.logger.setContext(SearchRepository.name);
+  }
 
   @GenerateSql({
     params: [
@@ -183,10 +190,12 @@ export class SearchRepository {
     ],
   })
   async searchMetadata(pagination: SearchPaginationOptions, options: AssetSearchOptions) {
+    const orderColumn = (options.orderBy || 'asset.fileCreatedAt')
     const orderDirection = (options.orderDirection?.toLowerCase() || 'desc') as OrderByDirection;
+    this.logger.log(`order is: ${orderColumn}`)
     const items = await searchAssetBuilder(this.db, options)
       .selectAll('asset')
-      .orderBy('asset.fileCreatedAt', orderDirection)
+      .orderBy(options.orderBy == 'uploaded' ? 'asset.createdAt' : 'asset.fileCreatedAt', orderDirection)
       .limit(pagination.size + 1)
       .offset((pagination.page - 1) * pagination.size)
       .execute();

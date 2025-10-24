@@ -7,6 +7,7 @@
     mdiCellphoneArrowDownVariant,
     mdiContentDuplicate,
     mdiCrosshairsGps,
+    mdiImageRefresh,
     mdiImageSizeSelectLarge,
     mdiLinkEdit,
   } from '@mdi/js';
@@ -16,6 +17,7 @@
     { href: AppRoute.DUPLICATES, icon: mdiContentDuplicate, label: $t('review_duplicates') },
     { href: AppRoute.LARGE_FILES, icon: mdiImageSizeSelectLarge, label: $t('review_large_files') },
     { href: AppRoute.GEOLOCATION, icon: mdiCrosshairsGps, label: $t('manage_geolocation') },
+    { href: `${AppRoute.SEARCH}?query=${encodeURIComponent('{"orderBy":"uploaded"}')}`, icon: mdiImageRefresh, label: "Recent Uploads" },
   ];
 </script>
 

@@ -67,6 +67,7 @@ export class SearchService extends BaseService {
         checksum,
         userIds,
         orderDirection: dto.order ?? AssetOrder.Desc,
+        orderBy: dto.orderBy,
       },
     );
 

@@ -926,6 +926,7 @@ export type MetadataSearchDto = {
     make?: string;
     model?: string | null;
     order?: AssetOrder;
+    orderBy?: string | null;
     originalFileName?: string;
     originalPath?: string;
     page?: number;
@@ -1032,6 +1033,7 @@ export type SmartSearchDto = {
     libraryId?: string | null;
     make?: string;
     model?: string | null;
+    orderBy?: string | null;
     page?: number;
     personIds?: string[];
     query?: string;

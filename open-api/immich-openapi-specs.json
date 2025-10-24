@@ -5985,6 +5985,14 @@
             }
           },
           {
+            "name": "orderBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "personIds",
             "required": false,
             "in": "query",
@@ -12674,6 +12682,9 @@
             ],
             "default": "desc"
           },
+          "orderBy": {
+            "type": "string"
+          },
           "originalFileName": {
             "type": "string"
           },
@@ -13645,6 +13656,9 @@
           },
           "model": {
             "nullable": true,
+            "type": "string"
+          },
+          "orderBy": {
             "type": "string"
           },
           "personIds": {
@@ -14747,6 +14761,9 @@
           },
           "model": {
             "nullable": true,
+            "type": "string"
+          },
+          "orderBy": {
             "type": "string"
           },
           "page": {
