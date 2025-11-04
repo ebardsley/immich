@@ -17,6 +17,7 @@ export interface SearchAssetIdOptions {
   checksum?: Buffer;
   deviceAssetId?: string;
   id?: string;
+  sharedBy?: string | null;
 }
 
 export interface SearchUserIdOptions {

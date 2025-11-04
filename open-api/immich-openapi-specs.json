@@ -6015,6 +6015,15 @@
             }
           },
           {
+            "name": "sharedBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "nullable": true,
+              "type": "string"
+            }
+          },
+          {
             "name": "size",
             "required": false,
             "in": "query",
@@ -12710,6 +12719,10 @@
             "minimum": -1,
             "type": "number"
           },
+          "sharedBy": {
+            "nullable": true,
+            "type": "string"
+          },
           "size": {
             "maximum": 1000,
             "minimum": 1,
@@ -13672,6 +13685,10 @@
             "maximum": 5,
             "minimum": -1,
             "type": "number"
+          },
+          "sharedBy": {
+            "nullable": true,
+            "type": "string"
           },
           "size": {
             "maximum": 1000,
@@ -14789,6 +14806,10 @@
             "minimum": -1,
             "type": "number"
           },
+          "sharedBy": {
+            "nullable": true,
+            "type": "string"
+          },
           "size": {
             "maximum": 1000,
             "minimum": 1,
@@ -14982,6 +15003,10 @@
             "maximum": 5,
             "minimum": -1,
             "type": "number"
+          },
+          "sharedBy": {
+            "nullable": true,
+            "type": "string"
           },
           "state": {
             "nullable": true,

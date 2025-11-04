@@ -8,6 +8,7 @@
     query: string;
     queryType: 'smart' | 'metadata' | 'description';
     personIds: SvelteSet<string>;
+    sharedBy: string | null;
     tagIds: SvelteSet<string> | null;
     location: SearchLocationFilter;
     camera: SearchCameraFilter;
@@ -30,6 +31,7 @@
   import SearchRatingsSection from '$lib/components/shared-components/search-bar/search-ratings-section.svelte';
   import SearchTagsSection from '$lib/components/shared-components/search-bar/search-tags-section.svelte';
   import SearchTextSection from '$lib/components/shared-components/search-bar/search-text-section.svelte';
+  import SearchUserSection from '$lib/components/shared-components/search-bar/search-user-section.svelte';
   import { preferences } from '$lib/stores/user.store';
   import { parseUtcDate } from '$lib/utils/date-time';
   import { generateId } from '$lib/utils/generate-id';
@@ -76,6 +78,7 @@
     query,
     queryType: defaultQueryType(),
     personIds: new SvelteSet('personIds' in searchQuery ? searchQuery.personIds : []),
+    sharedBy: null,
     tagIds:
       'tagIds' in searchQuery
         ? searchQuery.tagIds === null
@@ -115,6 +118,7 @@
       queryType: defaultQueryType(), // retain from localStorage or default
       personIds: new SvelteSet(),
       tagIds: new SvelteSet(),
+      sharedBy: '',
       location: {},
       camera: {},
       date: {},
@@ -153,6 +157,7 @@
       isFavorite: filter.display.isFavorite || undefined,
       isNotInAlbum: filter.display.isNotInAlbum || undefined,
       personIds: filter.personIds.size > 0 ? [...filter.personIds] : undefined,
+      sharedBy: !!filter.sharedBy ? filter.sharedBy : undefined,
       tagIds: filter.tagIds === null ? null : filter.tagIds.size > 0 ? [...filter.tagIds] : undefined,
       type,
       rating: filter.rating,
@@ -193,6 +198,9 @@
 
         <!-- LOCATION -->
         <SearchLocationSection bind:filters={filter.location} />
+
+        <!-- SHARED BY USER -->
+        <SearchUserSection bind:selectedId={filter.sharedBy} />
 
         <!-- CAMERA MODEL -->
         <SearchCameraSection bind:filters={filter.camera} />

@@ -56,7 +56,7 @@ export function mapLoginResponse(entity: UserAdmin, accessToken: string): LoginR
     isAdmin: entity.isAdmin,
     profileImagePath: entity.profileImagePath,
     shouldChangePassword: entity.shouldChangePassword,
-    isOnboarded: onboardingMetadata?.isOnboarded ?? false,
+    isOnboarded: true,  // XXX: make this a flag onboardingMetadata?.isOnboarded ?? false,
   };
 }
 

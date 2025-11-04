@@ -73,6 +73,11 @@ class BaseSearchDto {
   country?: string | null;
 
   @IsString()
+  @IsNotEmpty()
+  @Optional({ nullable: true, emptyToNull: true })
+  sharedBy?: string | null;
+
+  @IsString()
   @Optional({ nullable: true, emptyToNull: true })
   make?: string;
 
